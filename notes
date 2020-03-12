@@ -1,0 +1,180 @@
+### TODO
+- DON'T FORGET TO RE-ENABLE -Werror AND USE OPTI FLAGS
+- Argument increment changed when using 3$
+- Faire attention de faire la fonction pour ecire que jusque INT_MAX ?
+- Should we change prefix to a rvalue to remove the strdup
+- If we replace mallocs by fixed arrays, don't forget to remove negative check 
+  after llitoa like functions.
+
+#----------------------------------------------#
+
+%[flags][width][.precision][size]type
+
+End-Game:
+- gerer les * /!\IMPORTANT FOR lS ASKIP/!\
+
+### Information
+# flags
+flag-list:
+'-' Left align the result within the given field width
+'+' Use a sign (+ or -) to prefix the output value if it is of a signed type.
+'0' leading 0's instead of space if width specified. Won't work if '-'
+    or precision is specified.
+' ' Use a blank to prefix the output value if it is signed and positive
+'#' prefix with 0 0x 0X for any non-zero value or force deciamal point.
+    Ignored with c, d, i, u, or s
+
+# width
+For %d:
+ - prints all prefix blanks untils INT_MAX - bud.read (not counting '%' char)
+ - Doen't print anything between [INT_MAX; INT_MAX - buf.read] (same)
+ - Print no blanks if width > INT_MAX (at 2 147 483 647
+
+# preci
+ - Adds y - conv.len 0's in front of conv.str
+ - just the . disables the '0' flag
+
+/!\ width preci formula:  x = width; y = preci /!\
+width: x = (y > conv.len) ? x - y : x - conv.len;
+preci: y - conv.len
+
+### type list
+
+- c s p
+- d i o u x X	avec size: h hh l ll
+- f 			avec size: l L
+- %%
+
+x = width
+y = preci
+#------------- %c ---------------------
+- '-' 		undefined but works
+- '+'		undefined and does nothing
+- '0'		undefined but works
+- ' '		undefined and does nothing
+- '#'		undefined and does nothing
+- width
+- preci		does nothing with only . and no y
+			otherwise undefined and does nothing
+- size
+
+#------------- %s ---------------------
+- '-'
+- '+'		undefined and does nothing
+- '0'		undefined but works
+- ' '		undefined and does nothing
+- '#'		undefined and does nothing
+- width
+- preci		only prints the first y characters of the string.
+			prints no characters if only . is specified.
+			works with width
+- size
+
+#------------- %p ---------------------
+- '-'
+- '+'		undefined and does nothing
+- '0'		undefined but unlike width adds 0's after "0x"
+- ' '		undefined and does nothing
+- '#'		undefined and does nothing
+- width
+- preci		adds 0's but unlike '0' doesn't count the "0x" characters
+			so you'll have two more 0's than with '0'
+			also disables '0' flag so you you get
+			: x - (strlen(conv) | y) - 2  blanks
+- size
+
+
+#--------------------------------------#
+#--------------------------------------#
+
+
+#------------- %d ---------------------
+- '-'
+- '+'
+- '0'
+- ' '
+- '#'		undefined and does nothing
+- width		
+- preci
+- size
+
+#------------- %i ---------------------
+- '-'
+- '+'
+- '0'
+- ' '
+- '#'		undefined and does nothing
+- width
+- preci
+- size
+note: exact same as %d in printf
+
+#------------- %o ---------------------
+- '-'
+- '+'		undefined and does nothing
+- '0'
+- ' '		undefined and does nothing
+- '#'		'0' prefix included in the preci
+- size
+- width
+- preci
+
+#------------- %u ---------------------
+- '-'
+- '+'		undefined behavior and does nothing
+- '0'
+- ' '		undefined and does nothing
+- '#'		undefined and does nothing
+- width		
+- preci
+- size
+note:		Real printf gives a warning if value > INT_MAX is passed instead
+			of a variable. But this is a dumb warning since it considers rvalue
+			as int always
+
+#------------- %x ---------------------
+- '-'
+- '+'		undefined and does nothing
+- '0'		counts "0x" as conv.str characters
+- ' '		undefined and does nothing
+- '#'		activates "0x" characters
+- width
+- preci		The 0's go after the "0x", "0x" counts as two more characters
+- size
+
+#------------- %X ---------------------
+- '-'
+- '+'		undefined and does nothing
+- '0'		counts "0X" as conv.str characters
+- ' '		undefined and does nothing
+- '#'		activates "0X" characters
+- width
+- preci		The 0's go after the "0X", "0X" counts as two more characters
+- size
+
+
+#--------------------------------------#
+#--------------------------------------#
+
+
+#------------- %f ---------------------
+- '-'
+- '+'
+- '0'
+- ' '
+- '#'		make '.' be printed even if preci is 0 or not there.
+- width		width = width - conv.str (including int, '.' and decimal part)
+- preci		. is the same as .0
+			. doesn't disable the flag 0
+-size		undefined (for all but l) and does nothing
+notes:		default precision is 6
+			int + decimal part count as the whole conv.str
+
+#------------- %  ---------------------
+- '-'
+- '+'
+- '0'
+- ' '
+- '#'
+- width
+- preci

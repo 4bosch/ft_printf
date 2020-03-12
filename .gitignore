@@ -1,0 +1,8 @@
+*.swp
+libft/*.o
+libft/libft.a
+release/*
+printf
+libftprintf.a
+obj/
+main.c
